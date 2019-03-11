@@ -1,0 +1,41 @@
+{{- $groups := dict }}
+{{- $curName := "" }}
+{{- $curLines := list }}
+{{- range .Files.Lines "chart.l10n" }}
+  {{- if hasPrefix "[" . }}
+    {{- if ne $curName "" }}
+      {{- $_ := set $groups $curName (without $curLines "") }}
+    {{- end }}
+    {{- $curName = . | replace "[" "" | replace "]" "" }}
+    {{- $curLines = list }}
+  {{- else -}}
+    {{- $curLines = append $curLines . -}}
+  {{- end }}
+{{- end }}
+{{- if ne $curName "" }}
+  {{- $_ := set $groups $curName (without $curLines "") -}}
+{{- end }}
+
+{{- range $key, $value := $groups }}
+{{- $chart := splitn ":" 4 $key }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "CHARTNAME.fullname" $ }}-{{ tpl $chart._0 $ }}-l10n
+  labels:
+    app.kubernetes.io/name: {{ tpl (default $chart._0 $chart._1) $ }}
+    helm.sh/chart: {{ include "CHARTNAME.chart" $ }}
+    app.kubernetes.io/instance: {{ tpl (default $.Release.Name $chart._2) $ }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    {{- if $.Values.partOf }}
+    app.kubernetes.io/part-of: {{ tpl $.Values.partOf $ }}
+    {{- end }}
+    object.ravin.soc1.ir/type: l10n
+  annotations:
+    object.ravin.soc1.ir/priority: {{ default "2" $chart._3 | quote }}
+data:
+  {{- $content := tpl (join "\n" $value) $ }}
+  {{- $yamlContent := regexReplaceAll "(.*?)=(.*)" $content "${1}: ${2}" }}
+  {{- regexReplaceAll "(.*?)\\[(.*?)\\]?: (.*)" $yamlContent "${1}.${2}: ${3}" | nindent 2 }}
+---
+{{ end -}}

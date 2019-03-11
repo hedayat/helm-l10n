@@ -1,0 +1,8 @@
+name: "l10n"
+version: "0.1.0"
+usage: "Adds l10n support for Helm charts"
+description: |-
+  This plugin provides localization support to Helm according to our localization spec
+ignoreFlags: false
+useTunnel: false
+command: "$HELM_PLUGIN_DIR/helm-l10n.sh"
