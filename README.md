@@ -54,7 +54,7 @@ generate l10n configmaps when deployed.
 Generating message catalogue file: mychart/po/mychart.pot
 WARNING: No .po files found in mychart/po directory to update.
 
-> cp mychart/po/mychart.pot mychart/po/fa.po
+msginit -i mychart/po/mychart.pot -o mychart/po/fa.po -l fa_IR.UTF-8
 
 # After translating strings in fa.po with an appropriate tool, we compile .po files
 # into chart.l10n file containing all strings and their translations:
@@ -79,7 +79,7 @@ Updating translation file: mychart/po/fa.po
 > vim mychart/po/fa.po
 
 # Regenerate chart.l10n:
-> helm l10n compile
+helm l10n compile mychart
 
 # Create a new package
 > helm package mychart
@@ -88,4 +88,8 @@ Updating translation file: mychart/po/fa.po
 ## Installation
 ```
 helm plugin install https://gitlab.soc1.ir/devops/helm-l10n
+```
+Or you can manually extract the archive in your disk and run
+```
+helm plugin install path/to/plugin/dir
 ```
