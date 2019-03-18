@@ -25,7 +25,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ tpl $chart._0 $ }}
     helm.sh/chart: {{ include "CHARTNAME.chart" $ }}
-    app.kubernetes.io/instance: {{ tpl (default $.Release.Name $chart._1) $ }}
+    app.kubernetes.io/instance: {{ tpl (default EXTRA_INSTANCE_DEFAULT $chart._1) $ }}
     app.kubernetes.io/managed-by: {{ $.Release.Service }}
     {{- if $.Values.partOf }}
     app.kubernetes.io/part-of: {{ tpl $.Values.partOf $ }}

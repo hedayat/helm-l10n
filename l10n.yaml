@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ include "CHARTNAME.name" . }}
     helm.sh/chart: {{ include "CHARTNAME.chart" . }}
-    app.kubernetes.io/instance: {{ include "CHARTNAME.instance" . }}
+    app.kubernetes.io/instance: {{ INSTANCE }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     {{- if .Values.partOf }}
     app.kubernetes.io/part-of: {{ tpl .Values.partOf . }}
