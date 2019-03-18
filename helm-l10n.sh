@@ -33,7 +33,8 @@ function init()
     sed "s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n.yaml > $chart/templates/l10n.yaml
     sed "s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n-subcharts.yaml > $chart/templates/l10n-subcharts.yaml
     mkdir $chart/po 2> /dev/null || :
-    cat > $chart/chart.l10n.in <<-EOF
+    if [ ! -f "$chart/chart.l10n.in" ]; then
+        cat > $chart/chart.l10n.in <<-EOF
 	Name=$chart_name
 	Instance={{ .Release.Name }}
 
@@ -43,6 +44,7 @@ function init()
 	#[bahman:postgres]
 	#Instance=Bahman subchart of postgres
 	EOF
+    fi
     echo "Basic l10n structure created. You can now add source strings to $chart/chart.l10n.in"
 }
 
