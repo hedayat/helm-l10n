@@ -38,10 +38,10 @@ function init()
 	Name=$chart_name
 	Instance={{ .Release.Name }}
 
-	#[subchart:name:instance:3]
+	#[name:instance:alias:3]
 	#Instance=the instance in {{ .Release.Name }}
 	
-	#[bahman:postgres]
+	#[postgres::bahman]
 	#Instance=Bahman subchart of postgres
 	EOF
     fi
