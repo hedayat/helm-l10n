@@ -35,7 +35,12 @@ metadata:
     object.ravin.soc1.ir/priority: {{ default "2" $chart._3 | quote }}
 data:
   {{- $content := tpl (join "\n" $value) $ }}
-  {{- $yamlContent := regexReplaceAll "(.*?)=(.*)" $content "${1}: ${2}" }}
+  {{/*
+     Convert to YAML format. Quote the string so that escape chars will work
+     But replace \s with the space char since it is not supported in YAML
+  */}}
+  {{- $content = regexReplaceAll "([^\\\\](\\\\{2})*)\\\\s" $content "${1} " }}
+  {{- $yamlContent := regexReplaceAll "(.*?)=(.*)" $content "${1}: \"${2}\"" }}
   {{- regexReplaceAll "(.*?)\\[(.*?)\\]?: (.*)" $yamlContent "${1}.${2}: ${3}" | nindent 2 }}
 ---
 {{ end -}}
