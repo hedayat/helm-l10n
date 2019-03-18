@@ -31,7 +31,7 @@ function init()
         echo po/ >> $chart/.helmignore
     fi
     sed "s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n.yaml > $chart/templates/l10n.yaml
-    sed "s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n-subcharts.yaml > $chart/templates/l10n-subcharts.yaml
+    sed "s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n-extra.yaml > $chart/templates/l10n-extra.yaml
     mkdir $chart/po 2> /dev/null || :
     if [ ! -f "$chart/chart.l10n.in" ]; then
         cat > $chart/chart.l10n.in <<-EOF
