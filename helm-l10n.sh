@@ -18,6 +18,8 @@ function help()
 	    -k string |
 	    --add-keyword string    Add a custom keyword for translation strings
 	    --no-default-keywords   Don't use default keywords for translation strings
+	Init Flags:
+	    --full-instance-name    Use full instance name by default
 	EOF
 }
 
@@ -30,19 +32,21 @@ function init()
         echo chart.l10n.in >> $chart/.helmignore
         echo po/ >> $chart/.helmignore
     fi
-    sed "s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n.yaml > $chart/templates/l10n.yaml
-    sed "s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n-subcharts.yaml > $chart/templates/l10n-subcharts.yaml
+    sed "s/INSTANCE/$INSTANCE/g;s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n.yaml > $chart/templates/l10n.yaml
+    sed "s/EXTRA_INSTANCE_DEFAULT/$EXTRA_INSTANCE_DEFAULT/g;s/CHARTNAME/$chart_name/g" $HELM_PLUGIN_DIR/l10n-extra.yaml > $chart/templates/l10n-extra.yaml
     mkdir $chart/po 2> /dev/null || :
-    cat > $chart/chart.l10n.in <<-EOF
+    if [ ! -f "$chart/chart.l10n.in" ]; then
+        cat > $chart/chart.l10n.in <<-EOF
 	Name=$chart_name
 	Instance={{ .Release.Name }}
 
-	#[subchart:name:instance:3]
+	#[name:instance:alias:3]
 	#Instance=the instance in {{ .Release.Name }}
 	
-	#[bahman:postgres]
+	#[postgres::bahman]
 	#Instance=Bahman subchart of postgres
 	EOF
+    fi
     echo "Basic l10n structure created. You can now add source strings to $chart/chart.l10n.in"
 }
 
@@ -82,13 +86,16 @@ function compile()
 }
 
 
-TEMP=$(getopt -o "hk:" --long 'help,add-keyword:,no-default-keywords' -n 'helm l10n' -- "$@")
+TEMP=$(getopt -o "hk:" --long 'help,add-keyword:,no-default-keywords,full-instance-name' -n 'helm l10n' -- "$@")
 if [ $? -ne 0 ]; then
     exit 1
 fi
 
 eval set -- "$TEMP"
 unset TEMP
+
+INSTANCE=.Release.Name
+EXTRA_INSTANCE_DEFAULT="$.Release.Name"
 
 while true; do
     case $1 in
@@ -102,6 +109,10 @@ while true; do
             ;;
         --no-default-keywords)
             DEFAULT_KEYWORDS="--keyword="
+            ;;
+        --full-instance-name)
+            INSTANCE='include "CHARTNAME.instance" .'
+	    EXTRA_INSTANCE_DEFAULT='(printf "%s-%s" $chart._0 $.Release.Name)'
             ;;
         --)
             shift

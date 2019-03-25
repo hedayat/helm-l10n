@@ -18,11 +18,15 @@ This command creates the basic skeleton to add l10n support to the chart:
   their translations. It'll read `/chart.l10n` file which is generated with
   `helm l10n compile <chart_path>` command.
 
-  `/templates/l10n-subcharts.yaml`: This template will generate a configmap for
-  translation strings for each subchart. If this chart doesn't have sub-charts
+  `/templates/l10n-extra.yaml`: This template will generate a configmap for
+  translation strings for each subchart and also for extra objects with
+  non-default labels. If this chart doesn't have sub-charts or such objects
   or does not provide translations for them, it can be removed.
 
 `/chart.l10n.in` & `/po` are added to the `.helmignore` file.
+Note that it is usually safe to run this command on projects which are already
+initialized: it only replaces template files and doesn't touch `/po` directory
+or `/chart.l10n.in` if they exist.
 
 ### Extracting strings for translation: `helm l10n update_messages <chart_path>`
 To extract source strings for translation from `chart.l10n.in` file,

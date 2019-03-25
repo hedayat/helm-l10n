@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ include "CHARTNAME.name" . }}
     helm.sh/chart: {{ include "CHARTNAME.chart" . }}
-    app.kubernetes.io/instance: {{ include "CHARTNAME.instance" . }}
+    app.kubernetes.io/instance: {{ INSTANCE }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     {{- if .Values.partOf }}
     app.kubernetes.io/part-of: {{ tpl .Values.partOf . }}
@@ -17,5 +17,10 @@ data:
   {{- $content := tpl (.Files.Get "chart.l10n") . }}
   {{/* Remove all sub-chart translations */}}
   {{- $baseContent := regexReplaceAll "(?ms)(\\n)*^\\[.*" $content "" }}
-  {{- $yamlContent := regexReplaceAll "(.*?)=(.*)" $baseContent "${1}: ${2}" }}
+  {{/*
+     Convert to YAML format. Quote the string so that escape chars will work
+     But replace \s with the space char since it is not supported in YAML
+  */}}
+  {{- $baseContent = regexReplaceAll "([^\\\\](\\\\{2})*)\\\\s" $baseContent "${1} " }}
+  {{- $yamlContent := regexReplaceAll "(.*?)=(.*)" $baseContent "${1}: \"${2}\"" }}
   {{- regexReplaceAll "(.*?)\\[(.*?)\\]?: (.*)" $yamlContent "${1}.${2}: ${3}" | nindent 2 }}
