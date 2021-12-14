@@ -112,7 +112,7 @@ while true; do
             ;;
         --full-instance-name)
             INSTANCE='include "CHARTNAME.instance" .'
-	    EXTRA_INSTANCE_DEFAULT='(printf "%s-%s" $chart._0 $.Release.Name)'
+            EXTRA_INSTANCE_DEFAULT='(printf "%s-%s" $chart._0 $.Release.Name)'
             ;;
         --)
             shift
