@@ -91,7 +91,7 @@ helm l10n compile mychart
 
 ## Installation
 ```
-helm plugin install https://gitlab.soc1.ir/devops/helm-l10n
+helm plugin install https://github.com/hedayat/helm-l10n
 ```
 Or you can manually extract the archive in your disk and run
 ```
